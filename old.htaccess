@@ -1,0 +1,77 @@
+RewriteEngine on
+#Options All -Indexes
+
+#RewriteCond %{HTTP_HOST} !^www\.
+#RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/co_ncall/$1 [R=301,L] 
+
+#RewriteCond %{REQUEST_METHOD} !POST
+#RewriteRule ^home http://192.168.1.53/co_ncall/ [L,R=301]
+
+
+RewriteCond $1 !^(index.php|resources|robots.txt)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+
+
+########################### FOR SPEED UP SITE CACHE ALL THE JS IMAGE ##########
+#Gzip - compress text, html, javascript, css, xml
+<IfModule mod_deflate.c>
+    #The following line is enough for .js and .css
+    AddOutputFilter DEFLATE js css
+    AddOutputFilterByType DEFLATE text/plain text/xml application/xhtml+xml text/css application/xml application/rss+xml application/atom_xml application/x-javascript application/x-httpd-php application/x-httpd-fastphp text/html
+ 
+    #The following lines are to avoid bugs with some browsers
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html 
+</IfModule>
+#End Gzip
+
+<ifModule mod_gzip.c>
+mod_gzip_on Yes
+mod_gzip_dechunk Yes
+mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
+mod_gzip_item_include handler ^cgi-script$
+mod_gzip_item_include mime ^text/.*
+mod_gzip_item_include mime ^application/x-javascript.*
+mod_gzip_item_exclude mime ^image/.*
+mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
+
+
+############################################################################################
+<IfModule mod_headers.c>
+<FilesMatch "\.(js|css|xml|gz)$">
+        Header append Vary Accept-Encoding
+</FilesMatch>
+   
+# 3 Month
+<filesMatch ".(eot|otf|svg|ttf|woff)$">
+    Header set Cache-Control "public, proxy-revalidate,max-age=7257600"
+</FilesMatch>
+
+# 3 Month
+<filesMatch ".(flv|gif|jpg|jpeg|png|ico|swf)$">
+    Header set Cache-Control "public, proxy-revalidate,max-age=7257600"
+</FilesMatch>
+# 1 Week
+<filesMatch ".(css|pdf|txt)$">
+    Header set Cache-Control "public, proxy-revalidate,max-age=604800"
+</FilesMatch>
+
+<filesMatch ".(js)$">
+    Header set Cache-Control "private, proxy-revalidate,max-age=604800"
+</FilesMatch>
+
+# 10 Minutes
+<filesMatch ".(html|htm)$">
+    Header set Cache-Control "public, proxy-revalidate,max-age=600"
+</FilesMatch>
+# NONE
+<filesMatch ".(pl|php|cgi|spl)$">
+    Header set Cache-Control "private, must-revalidate"  
+</FilesMatch>
+
+</IfModule>
+############################################################################################
